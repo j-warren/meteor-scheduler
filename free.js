@@ -9,6 +9,7 @@ var unselected = "white";
 var mousedown = false;
 var fromCell, toCell;
 var COLUMN_HEIGHT = Math.floor(cells.length / 7);
+var paintAdditive = true;
 
 function setup() {
 
@@ -26,20 +27,22 @@ function setup() {
 			if (data[this.id] == 1) {
 				data[this.id] = 0;
 				this.style.backgroundColor = unselected;
+				paintAdditive = false;
 
 			} else {
 				data[this.id] = 1;
 				this.style.backgroundColor = selected;
+				paintAdditive = true;
 			}
 		}
 
 		cells[i].onmouseover = function() {
 			var value;
-			if (data[this.id] == 1) {
-				value = 0;
+			if (paintAdditive) {
+				value = 1;
 
 			} else {
-				value = 1;
+				value = 0;
 			}
 			toCell = this.id;
 
