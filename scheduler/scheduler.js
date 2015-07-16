@@ -5,6 +5,8 @@
 
 People = new Mongo.Collection("people");
 console.log("Hello world");
+SLOTS_PER_DAY = 48
+DAYS = 7
 
 if (Meteor.isClient) {
   console.log("Hello client");
@@ -23,29 +25,36 @@ if (Meteor.isClient) {
       return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     },
 
-    times: function () {
-      // Returns an array of strings from "0:00" to "23:30"
-      var result = [];
-
-      for (i=0; i<48; i++) {
-        result[i] = String(Math.floor(i/2)) + ":";
-
-        if (i%2 == 0) {
-          result[i] += "00";
-
-        } else {
-          result[i] += "30";
-        }
+    times: function (i) {
+      // Returns string in the range "0:00" to "23:30"
+      // Used in spacebars to label each row
+      var result = String(Math.floor(i/2)) + ":";
+      if (i%2 == 0) {
+        result += "00";
+      } else {
+        result += "30";
       }
-
       return result;
     },
 
-    dayTimes: function () {
-      // Given a day of the week, returns an array of Dates
-      // representing half hour intervals from midnight to
-      // midnight (start to end of day)
-      // TODO ...
+    slots: function () {
+      // Returns an array with values from 0 to SLOTS_PER_DAY
+      // Used in spacebars to provide index for ids, times
+      var result = [];
+      for (i=0; i<SLOTS_PER_DAY; i++) {
+        result[i] = i;
+      }
+      return result;
+    },
+
+    ids: function (i) {
+      // Given a time index, returns each ID of the related timeslots
+      // Used to generate IDs of each TD tag in each row in the table
+      results = [];
+      for (j=0; j<DAYS; j++) {
+        results[j] = j*48 + i;
+      }
+      return results;
     }
   });
 
@@ -70,8 +79,7 @@ if (Meteor.isClient) {
 
     'submit .done': function (event) {
       var n = event.target.name.value;
-      People.insert({name: n, free: [0, 0, 0]});
-      // alert("hi :)");
+      // TODO ...
     }
   });
 }
@@ -91,4 +99,18 @@ if (Meteor.isServer) {
     People.insert({name: "alice", free: [0, 0, 0]});
     People.insert({name: "bob", free: [0, 0, 0]});
   }
+
+  Meteor.methods = ({
+    addPerson : function(name) {
+      // A zeroed array 48 cells long
+      var times = [];
+      for (i=0; i<SLOTS_PER_DAY; i++) {times[i] = 1;}
+
+      // A 2D array indexed by day, timeslot
+      var free = [];
+      for (i=0; i<DAYS; i++) {free[i] = times;}
+
+      People.insert({name: name, free: free});
+    }
+  });
 }

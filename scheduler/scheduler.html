@@ -19,11 +19,11 @@
 		{{/each}}
 	</tr>
 
-	{{#each times}}
+	{{#each slots}}
 	<tr>
-		<th>{{this}}</th>
-		{{#each days}}
-		<td id="a"></td>
+		<th>{{times this}}</th>
+		{{#each ids this}}
+		<td id={{this}}>{{this}}</td>
 		{{/each}}
 	</tr>
 	{{/each}}
