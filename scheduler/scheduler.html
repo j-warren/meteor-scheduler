@@ -1,51 +1,51 @@
 <head>
-	<title>scheduler</title>
+    <title>scheduler</title>
 </head>
 
 <body>
-	<h1>Scheduler</h1>
-	{{> select}}
-	{{> results}}
+<h1>Scheduler</h1>
+{{> select}}
+{{> results}}
 </body>
 
 
 <template name="select">
-	<h2>Select availability</h2>
-	<table>
-	<tr>
-		<th>Day</th>
-		{{#each days}}
-		<th>{{this}}</th>
-		{{/each}}
-	</tr>
+    <h2>Select availability</h2>
+    <table>
+        <tr>
+            <th>Day</th>
+            {{#each days}}
+                <th>{{this}}</th>
+            {{/each}}
+        </tr>
 
-	{{#each slots}}
-	<tr>
-		<th>{{times this}}</th>
-		{{#each ids this}}
-		<td id={{this}} style={{changeColor}}>{{this}}</td>
-		{{/each}}
-	</tr>
-	{{/each}}
-	</table>
+        {{#each slots}}
+            <tr>
+                <th>{{times this}}</th>
+                {{#each ids this}}
+                    <td id={{this}}>{{this}}</td>
+                {{/each}}
+            </tr>
+        {{/each}}
+    </table>
 
-	<form class="done">
-		<input type="text" name="name" placeholder="Name" />
-		<input type="submit" />
-	</form>
+    <form class="done">
+        <input type="text" name="name" placeholder="Name" />
+        <input type="submit" />
+    </form>
 </template>
 
 
 <template name="results">
-	<h2>Results</h2>
-	<table>
-	{{#each people}}
-		<tr>
-		<td>{{name}}</td>
-		{{#each free}}
-		<td>{{this}}</td>
-		{{/each}}
-		</tr>
-	{{/each}}
-	</table>
+    <h2>Results</h2>
+    <table>
+        {{#each people}}
+            <tr>
+                <td>{{name}}</td>
+                {{#each free}}
+                    <td>{{this}}</td>
+                {{/each}}
+            </tr>
+        {{/each}}
+    </table>
 </template>

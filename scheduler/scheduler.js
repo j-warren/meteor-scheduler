@@ -55,7 +55,7 @@ if (Meteor.isClient) {
         results[j] = j*48 + i;
       }
       return results;
-    },
+    }
   });
 
   // For the contents of the select template
@@ -65,26 +65,6 @@ if (Meteor.isClient) {
     // (we could also say "click td .class" to only affect a
     // a certain class)
     'click td': function (event) {
-      console.log(event.target.id);
-      var id = event.target.id;
-      if (Math.floor(id/7) === 0){
-        Session.set("name","Sunday");
-      } else if (Math.floor(id/7) === 1){
-        Session.set("name","Monday");
-      } else if (Math.floor(id/7) === 2){
-        Session.set("name","Tuesday");
-      } else if (Math.floor(id/7) === 3) {
-        Session.set("name","Wednesday");
-      } else if (Math.floor(id/7)  === 4){
-        Session.set("name","Thursday");
-      } else if (Math.floor(id/7) === 5){
-        Session.set("name","Friday");
-      } else{
-        Session.set("name","Saturday");
-      }
-
-      var slot = id%48;
-      var array = Session.get("timeSelected");
       //array[slot] = 1;
       //Session.set("timeSelected",array);
       // console.log("A cell was clicked");
@@ -112,14 +92,88 @@ if (Meteor.isClient) {
 
     'mouseenter td' : function (event) {
       var cell = event.target;
-      $(cell).css("background-color","yellow");
-      console.log("Mouse Entered " + this.userId + ":" + cell.id);
+      var array = Session.get("SelectedCells");
+      //no selected time yet
+      if (array == null ) {
+        $(cell).css("background-color", "yellow");
+      } else {
+        if ($.inArray(cell.id/1,array) == -1){
+          $(cell).css("background-color", "yellow");
+        }
+      }
     },
 
     'mouseleave td' : function (event) {
       var cell = event.target;
-      $(cell).css("background-color","white");
-      console.log("Mouse Leave : " + this.userId + ":" + cell.id);
+      var array = Session.get("SelectedCells");
+      //no selected time yet
+      if (array == null){
+        $(cell).css("background-color", "white");
+      } else {
+        if ($.inArray(cell.id/1,array) == -1){
+          $(cell).css("background-color", "white");
+        }
+      }
+    },
+
+    'mousedown td':function (event){
+      var cell = event.target;
+      Session.set("from",cell.id);
+    },
+
+    'mouseup td':function (event){
+
+      var begin = Session.get("from");
+      var into = Session.set("to",event.target.id);
+      var end = Session.get("to");
+      var cells = Session.get("SelectedCells");
+
+      if (cells == null) {
+        cells = [];
+      }
+
+      var from;
+      var to;
+
+      //to see which one is on the left handside
+      if (begin/48 > end/48){
+        from = end;
+        to = begin;
+      } else{
+        from = begin;
+        to = end;
+      }
+
+      var to_x = Math.floor(to/48);
+      var to_y = to%48;
+      var from_x = Math.floor(from/48);
+      var from_y = from%48;
+      var start = from/1;
+      var current;
+
+      for (var j = 0; j <= Math.abs(to_y-from_y); j++) {
+
+        if (from_y > to_y) {
+          current = start - j;
+        }else {
+          current = start + j;
+        }
+
+        for (var k = 0; k <= Math.abs(to_x - from_x); k++) {
+          $("#"+current).css("background-color","red");
+          var pos = $.inArray(current,cells);
+          if ( pos == -1) {
+            cells.push(current);
+          } else{
+            cells.splice(pos,1);
+            $("#"+current).css("background-color","white");
+          }
+          current += 48;
+        }
+      }
+      for (var i in cells)
+        console.log(cells[i]);
+      Session.set("SelectedCells",cells);
     }
   });
 }
@@ -127,8 +181,8 @@ if (Meteor.isClient) {
 if (Meteor.isServer) {
   console.log("Hello server");
   /*Meteor.startup(function () {
-    // code to run on server at startup
-  });*/
+   // code to run on server at startup
+   });*/
 
   // People.find() returns a cursor pointing to all elements
   // in the collection (since the parameter is the search criteria
