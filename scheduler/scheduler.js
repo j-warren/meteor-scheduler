@@ -65,7 +65,28 @@ if (Meteor.isClient) {
     // (we could also say "click td .class" to only affect a
     // a certain class)
     'click td': function (event) {
+      console.log(event.target.id);
+      var id = event.target.id;
+      if (Math.floor(id/7) === 0){
+        Session.set("name","Sunday");
+      } else if (Math.floor(id/7) === 1){
+        Session.set("name","Monday");
+      } else if (Math.floor(id/7) === 2){
+        Session.set("name","Tuesday");
+      } else if (Math.floor(id/7) === 3) {
+        Session.set("name","Wednesday");
+      } else if (Math.floor(id/7)  === 4){
+        Session.set("name","Thursday");
+      } else if (Math.floor(id/7) === 5){
+        Session.set("name","Friday");
+      } else{
+        Session.set("name","Saturday");
+      }
 
+      var slot = id%48;
+      var array = Session.get("timeSelected");
+      //array[slot] = 1;
+      //Session.set("timeSelected",array);
       // console.log("A cell was clicked");
       // The element that was clicked can be found with
       // event.target (could be a td, or a child node)
@@ -74,7 +95,14 @@ if (Meteor.isClient) {
       // Print the ID of the target to the console
       // $() is JQuery; it just makes it easier to get attributes
       // TODO: no idea how to use the target (change its colour etc)
-      console.log($(event.target).attr('id'));
+      //console.log($(event.target).attr('id'));
+    },
+
+    'submit .done': function (event) {
+      var n = event.target.name.value;
+      var array = Session.get("timeSelected");
+      Meteor.call("submit",n,array);
+      // alert("hi :)");
     },
 
     'submit .done': function (event) {
@@ -111,7 +139,7 @@ if (Meteor.isServer) {
     People.insert({name: "bob", free: [0, 0, 0]});
   }
 
-  Meteor.methods = ({
+  Meteor.methods({
     addPerson : function(name) {
       // A zeroed array 48 cells long
       var times = [];
@@ -122,6 +150,9 @@ if (Meteor.isServer) {
       for (i=0; i<DAYS; i++) {free[i] = times;}
 
       People.insert({name: name, free: free});
+    },
+    submit:function(name,array){
+      People.update({name:name},{$set:{free:array}});
     }
   });
 }
