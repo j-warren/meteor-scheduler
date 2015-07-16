@@ -55,7 +55,7 @@ if (Meteor.isClient) {
         results[j] = j*48 + i;
       }
       return results;
-    }
+    },
   });
 
   // For the contents of the select template
@@ -111,14 +111,15 @@ if (Meteor.isClient) {
     },
 
     'mouseenter td' : function (event) {
-      var cellId = event.target.id;
-      var userId = this.;
-      console.log("Mouse Entered " + userId + ":" + cellId);
+      var cell = event.target;
+      $(cell).css("background-color","yellow");
+      console.log("Mouse Entered " + this.userId + ":" + cell.id);
     },
 
-    'mouselevel td' : function (event) {
-      var cellId = event.target.id;
-      console.log("Mouse Leave : " + cellId);
+    'mouseleave td' : function (event) {
+      var cell = event.target;
+      $(cell).css("background-color","white");
+      console.log("Mouse Leave : " + this.userId + ":" + cell.id);
     }
   });
 }
