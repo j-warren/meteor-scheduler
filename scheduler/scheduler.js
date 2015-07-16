@@ -80,6 +80,17 @@ if (Meteor.isClient) {
     'submit .done': function (event) {
       var n = event.target.name.value;
       // TODO ...
+    },
+
+    'mouseenter td' : function (event) {
+      var cellId = event.target.id;
+      var userId = this.;
+      console.log("Mouse Entered " + userId + ":" + cellId);
+    },
+
+    'mouselevel td' : function (event) {
+      var cellId = event.target.id;
+      console.log("Mouse Leave : " + cellId);
     }
   });
 }
