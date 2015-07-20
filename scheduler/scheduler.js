@@ -17,7 +17,12 @@ if (Meteor.isClient) {
   Template.body.helpers({
     timeTables: function() {
       var instance = TimeTables.findOne({userName: "example"});
-      return $(instance).userId;
+      return instance.userId;
+    },
+
+    timeTables_getSlots: function(userName) {
+      var instance = TimeTables.findOne({userName: userName});
+      console.log(instance.freeSlots);
     }
   });
 
@@ -211,7 +216,8 @@ if (Meteor.isServer) {
 
   // If People is empty
   if (TimeTables.find().count() == 0) {
-    TimeTables.insert({userName: "example", userId: Meteor.userId(), freeSlots: [0], createdAt: new Date()});
+    var array = [0, 23, 74];
+    TimeTables.insert({userName: "example", userId: 1324, freeSlots: array, createdAt: new Date()});
   }
 
   Meteor.methods({
