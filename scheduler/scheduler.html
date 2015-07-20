@@ -6,8 +6,6 @@
 <h1>Scheduler</h1>
 {{> select}}
 {{> results}}
-<br />
-<p>{{timeTables_getSlots "example"}}</p>
 </body>
 
 
@@ -43,10 +41,10 @@
 <template name="results">
     <h2>Results</h2>
     <table>
-        {{#each people}}
+        {{#each TimeTables}}
             <tr>
-                <td>{{name}}</td>
-                {{#each free}}
+                <td>{{userName}}</td>
+                {{#each freeSlots}}
                     <td>{{this}}</td>
                 {{/each}}
             </tr>
