@@ -9,8 +9,17 @@ SLOTS_PER_DAY = 48
 DAYS = 7
 var ADD = true;
 
+TimeTables = new Mongo.Collection("timeTables");
+
 if (Meteor.isClient) {
   console.log("Hello client");
+
+  Template.body.helpers({
+    timeTables: function() {
+      var instance = TimeTables.findOne({userName: "example"});
+      return $(instance).userId;
+    }
+  });
 
   Template.results.helpers({
     // Helpers are defined in JSON format
@@ -82,13 +91,7 @@ if (Meteor.isClient) {
     'submit .done': function (event) {
       var n = event.target.name.value;
       var array = Session.get("timeSelected");
-      Meteor.call("submit",n,array);
-      // alert("hi :)");
-    },
-
-    'submit .done': function (event) {
-      var n = event.target.name.value;
-      // TODO ...
+      Meteor.call("submit", n, array, event);
     },
 
     'mouseenter td' : function (event) {
@@ -207,9 +210,8 @@ if (Meteor.isServer) {
   // and {} or empty parameter matches all documents).
 
   // If People is empty
-  if (People.find().count() == 0) {
-    People.insert({name: "alice", free: [0, 0, 0]});
-    People.insert({name: "bob", free: [0, 0, 0]});
+  if (TimeTables.find().count() == 0) {
+    TimeTables.insert({userName: "example", userId: Meteor.userId(), freeSlots: [0], createdAt: new Date()});
   }
 
   Meteor.methods({
@@ -224,8 +226,24 @@ if (Meteor.isServer) {
 
       People.insert({name: name, free: free});
     },
-    submit:function(name,array){
+
+    submit:function(name, array, event){
       People.update({name:name},{$set:{free:array}});
+      
+      event.preventDefault();
+      
+      var userName = name;
+      var userId = Meteor.userId();
+      var freeSlots = array;
+
+      TimeTables.insert({
+        userName: userName,
+        userId: userId,
+        freeSlots: freeSlots,
+        createdAt: new Data()
+      });
+
+      event.target.text.value = "";
     }
   });
 }
