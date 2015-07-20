@@ -14,10 +14,6 @@ if (Meteor.isClient) {
   console.log("Hello client");
   Session.set("SelectedCells", []);
 
-  Meteor.startup(function(){
-    Meteor.call("getDefaultTimeTable", function(e,r){Session.set('defaultTable',r)});
-    console.log("defaultTable: " + Session.get("defaultTable"));
-  });
   Template.body.helpers({
 
   });
@@ -32,6 +28,22 @@ if (Meteor.isClient) {
   });
 
   Template.select.helpers({
+    backgroundColor: function(ID){
+      Meteor.call("getDefaultTimeTable", function(e,r){Session.set('defaultTable',r)});
+      var defaultTable = Session.get("defaultTable");
+      var val = 0x002B00;
+      console.log(typeof(ID));
+      var pos = ID/1;
+      console.log(pos);
+      var density = defaultTable[pos];
+      if (density != 0) {
+        val *= density;
+        return "background-color:#00" + val.toString(16);
+      } else{
+        return "background-color:white"
+      }
+    },
+
     days: function () {
       // Returns an array of days of the week
       return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -64,7 +76,7 @@ if (Meteor.isClient) {
       // Used to generate IDs of each TD tag in each row in the table
       results = [];
       for (j=0; j<DAYS; j++) {
-        results[j] = j*48 + i;
+        results[j] = j*SLOTS_PER_DAY + i;
       }
       return results;
     }
@@ -128,12 +140,20 @@ if (Meteor.isClient) {
       var cell = event.target;
       var array = Session.get("SelectedCells");
       //no selected time yet
-      if (array == null){
-        $(cell).css("background-color", "white");
-      } else {
-        if ($.inArray(cell.id/1,array) == -1){
+      var defaultTable = Session.get("defaultTable");
+      var val = 0x002B00;
+      var density = defaultTable[cell.id];
+      if (density == 0) {
+        if (array == null) {
           $(cell).css("background-color", "white");
+        } else {
+          if ($.inArray(cell.id / 1, array) == -1) {
+            $(cell).css("background-color", "white");
+          }
         }
+      } else{
+        val *= density;
+        $(cell).css("background-color", "#00"+val.toString(16));
       }
     },
 
@@ -169,7 +189,7 @@ if (Meteor.isClient) {
       var to;
 
       //to see which one is on the left handside
-      if (begin/48 > end/48){
+      if (begin/SLOTS_PER_DAY > end/SLOTS_PER_DAY){
         from = end;
         to = begin;
       } else{
@@ -177,10 +197,10 @@ if (Meteor.isClient) {
         to = end;
       }
 
-      var to_x = Math.floor(to/48);
-      var to_y = to%48;
-      var from_x = Math.floor(from/48);
-      var from_y = from%48;
+      var to_x = Math.floor(to/SLOTS_PER_DAY);
+      var to_y = to%SLOTS_PER_DAY;
+      var from_x = Math.floor(from/SLOTS_PER_DAY);
+      var from_y = from%SLOTS_PER_DAY;
       var start = from/1;
       var current;
 
@@ -208,7 +228,7 @@ if (Meteor.isClient) {
               $("#"+current).css("background-color","white");
             }
           }
-          current += 48;
+          current += SLOTS_PER_DAY;
         }
       }
       Session.set("SelectedCells",cells);
@@ -261,17 +281,16 @@ if (Meteor.isServer) {
     getDefaultTimeTable: function(){
       //initialize default page
 
-      var tempArray = new Array(336);
+      var tempArray = new Array(SLOTS_PER_DAY*DAYS);
+      for (var i = 0; i < tempArray.length; i++){
+        tempArray[i] = 0;
+      }
       var alltimetables = TimeTables.find().fetch();
       for (var i = 0; i < alltimetables.length; i++){
         var person = alltimetables[i];
         var hisTimeTable = person.freeSlots;
         for (var j = 0; j < hisTimeTable.length; j++){
-          if (isNaN(tempArray[hisTimeTable[j]])) {
-            tempArray[hisTimeTable[j]] = 0;
-          }  else {
             tempArray[hisTimeTable[j]]++;
-          }
         }
       }
       //Session.set("defaultTable",tempArray);
