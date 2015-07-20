@@ -8,12 +8,16 @@ console.log("Hello world");
 SLOTS_PER_DAY = 48
 DAYS = 7
 var ADD = true;
-
 TimeTables = new Mongo.Collection("timeTables");
 
 if (Meteor.isClient) {
   console.log("Hello client");
   Session.set("SelectedCells", []);
+
+  Meteor.startup(function(){
+    Meteor.call("getDefaultTimeTable", function(e,r){Session.set('defaultTable',r)});
+    console.log("defaultTable: " + Session.get("defaultTable"));
+  });
   Template.body.helpers({
 
   });
@@ -24,7 +28,7 @@ if (Meteor.isClient) {
     TimeTables: function () {
       return TimeTables.find();
     }
-    
+
   });
 
   Template.select.helpers({
@@ -214,6 +218,7 @@ if (Meteor.isClient) {
 
 if (Meteor.isServer) {
   console.log("Hello server");
+
   /*Meteor.startup(function () {
    // code to run on server at startup
    });*/
@@ -251,6 +256,27 @@ if (Meteor.isServer) {
         createdAt: new Data()
       });
       event.target.text.value = "";
+    },
+
+    getDefaultTimeTable: function(){
+      //initialize default page
+
+      var tempArray = new Array(336);
+      var alltimetables = TimeTables.find().fetch();
+      for (var i = 0; i < alltimetables.length; i++){
+        var person = alltimetables[i];
+        var hisTimeTable = person.freeSlots;
+        for (var j = 0; j < hisTimeTable.length; j++){
+          if (isNaN(tempArray[hisTimeTable[j]])) {
+            tempArray[hisTimeTable[j]] = 0;
+          }  else {
+            tempArray[hisTimeTable[j]]++;
+          }
+        }
+      }
+      //Session.set("defaultTable",tempArray);
+      return tempArray;
     }
+
   });
 }
