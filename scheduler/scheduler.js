@@ -250,6 +250,9 @@ if (Meteor.isServer) {
       });
 
       event.target.text.value = "";
+    },
+    "insertSlots" :function(){
+
     }
   });
 }
