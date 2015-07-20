@@ -124,6 +124,7 @@ if (Meteor.isClient) {
         freeSlots: array,
         createdAt: new Date()
       });
+      Session.set('defaultTable', defaultTable);
       event.target.name.value = "";
     },
 
