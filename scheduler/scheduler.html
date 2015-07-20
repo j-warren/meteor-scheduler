@@ -4,14 +4,18 @@
 
 <body>
 <h1>Scheduler</h1>
-{{> select}}
-{{> results}}
+<div class="timeTable">
+    {{> select}}
+</div>
+<div class="submitForm">
+    {{> results}}
+</div>
 </body>
 
 
 <template name="select">
     <h2>Select availability</h2>
-    <table >
+    <table>
         <tr>
             <th>Day</th>
             {{#each days}}
@@ -21,18 +25,16 @@
 
         {{#each slots}}
             <tr>
-                <th >{{times this}}</th>
+                <th>{{times this}}</th>
                 {{#each ids this}}
-
-                    <td id={{this}}>{{this}}</td>
-
+                    <td id={{this}} class="cell">{{this}}</td>
                 {{/each}}
             </tr>
         {{/each}}
     </table>
 
     <form class="done">
-        <input type="text" name="name" placeholder="Name" />
+        <input type="text" name="name" placeholder="Name" class="container"/>
         <input type="submit" />
     </form>
 </template>

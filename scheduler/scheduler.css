@@ -11,3 +11,49 @@ table {
     cursor:default;
 } 
 
+body {
+	background-image: linear-gradient(to bottom, #D2EDF4, #FF9800 100%);
+}
+
+h1 {
+	padding: 20px 15px 15px 15px;
+	position: relative;
+	color: #000000;
+	text-align: center;
+}
+
+h2 {
+	padding: 20px 15px 15px 15px;
+	position: relative;
+	color: #4A4A4A;
+	text-align: center;
+}
+
+.timeTable {
+	margin: auto;
+	position: relative;
+	padding: 5px 360px 15px 360px;
+}
+
+.done {
+	margin: auto;
+	position: relative;
+    width: 60%;
+    padding: 25px 300px 5px 300px;
+}
+
+.cell {
+	margin: auto;
+	text-align: center;
+	background-color: #FFFFFF;
+	width: 14%;
+    border:2px solid #000000;
+    padding: 5px;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  min-height: 100%;
+  background: white;
+}
