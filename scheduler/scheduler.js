@@ -173,7 +173,7 @@ if (Meteor.isClient) {
         }
 
         for (var k = 0; k <= Math.abs(to_x - from_x); k++) {
-          $("#"+current).css("background-color","red");
+         // $("#"+current).css("background-color","red");
           var pos = $.inArray(current,cells);
           if (ADD){
             //not inside array
