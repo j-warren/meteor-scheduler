@@ -7,6 +7,7 @@ People = new Mongo.Collection("people");
 console.log("Hello world");
 SLOTS_PER_DAY = 48
 DAYS = 7
+var ADD = true;
 
 if (Meteor.isClient) {
   console.log("Hello client");
@@ -119,6 +120,18 @@ if (Meteor.isClient) {
     'mousedown td':function (event){
       var cell = event.target;
       Session.set("from",cell.id);
+      if (Session.get("SelectedCells") != null){
+        var array = Session.get("SelectedCells");
+        var pos = $.inArray(cell.id/1,array);
+        for (var i in array){
+          console.log(array[i]);
+        }
+        if (pos != -1){
+          ADD = false;
+        } else{
+          ADD = true;
+        }
+      }
     },
 
     'mouseup td':function (event){
@@ -162,17 +175,22 @@ if (Meteor.isClient) {
         for (var k = 0; k <= Math.abs(to_x - from_x); k++) {
           $("#"+current).css("background-color","red");
           var pos = $.inArray(current,cells);
-          if ( pos == -1) {
-            cells.push(current);
+          if (ADD){
+            //not inside array
+            if (pos == -1){
+              cells.push(current);
+              $("#"+current).css("background-color","red");
+            }
           } else{
-            cells.splice(pos,1);
-            $("#"+current).css("background-color","white");
+            //inside array
+            if (pos != -1){
+              cells.splice(pos,1);
+              $("#"+current).css("background-color","white");
+            }
           }
           current += 48;
         }
       }
-      for (var i in cells)
-        console.log(cells[i]);
       Session.set("SelectedCells",cells);
     }
   });
