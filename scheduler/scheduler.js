@@ -92,7 +92,7 @@ if (Meteor.isClient) {
       //array[slot] = 1;
       //Session.set("timeSelected",array);
       // console.log("A cell was clicked");
-      // The element that was clicked can be found with
+      // The element that was clicked can be fou2nd with
       // event.target (could be a td, or a child node)
       // (use event.currentTarget to get the td)
 
@@ -108,9 +108,14 @@ if (Meteor.isClient) {
       console.log(name);
       var array = Session.get("SelectedCells");
       console.log(array);
+      var defaultTable = Session.get("defaultTable");
+
       // Meteor.call("submitTimeTable", name, array);
       for (var i in array){
-        $("#"+array[i]).css("background-color","white");
+        defaultTable[array[i]]++;
+        var density = defaultTable[array[i]];
+        var val = 0x002B00 * density;
+        $("#"+array[i]).css("background-color","#00"+val.toString(16));
       }
       var newArray = [];
       Session.set("SelectedCells",newArray);
@@ -119,7 +124,6 @@ if (Meteor.isClient) {
         freeSlots: array,
         createdAt: new Date()
       });
-      console.log("insert successed");
       event.target.name.value = "";
     },
 
