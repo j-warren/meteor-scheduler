@@ -246,15 +246,7 @@ if (Meteor.isServer) {
         freeSlots: array,
         createdAt: new Data()
       });
-
-<<<<<<< HEAD
       event.target.text.value = "";
-    },
-    "insertSlots" :function(){
-
-=======
-      event.target.name.value = "";
->>>>>>> 2ec2487dc83d68f4bb76f285a424914ae2accfee
     }
   });
 }
