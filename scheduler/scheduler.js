@@ -29,7 +29,7 @@ if (Meteor.isClient) {
 
   Template.select.helpers({
     backgroundColor: function(ID){
-      Meteor.call("getDefaultTimeTable", function(e,r){Session.set('defaultTable',r)});
+      Meteor.call("getDefaultTimeTable", function(e,r) {Session.set('defaultTable',r)});
       var defaultTable = Session.get("defaultTable");
       var val = 0x002B00;
       console.log(typeof(ID));
@@ -40,7 +40,7 @@ if (Meteor.isClient) {
         val *= density;
         return "background-color:#00" + val.toString(16);
       } else{
-        return "background-color:white"
+        //return "background-color:white"
       }
     },
 
@@ -131,7 +131,7 @@ if (Meteor.isClient) {
       var cell = event.target;
       var array = Session.get("SelectedCells");
       //no selected time yet
-      if (array == null ) {
+      if (array == null) {
         $(cell).css("background-color", "yellow");
       } else {
         if ($.inArray(cell.id/1,array) == -1){
@@ -149,15 +149,22 @@ if (Meteor.isClient) {
       var density = defaultTable[cell.id];
       if (density == 0) {
         if (array == null) {
-          $(cell).css("background-color", "white");
+          $(cell).css("background-color", "");
         } else {
           if ($.inArray(cell.id / 1, array) == -1) {
-            $(cell).css("background-color", "white");
+            $(cell).css("background-color", "");
+          } else {
+            $(cell).css("background-color", "red");
           }
         }
-      } else{
-        val *= density;
-        $(cell).css("background-color", "#00"+val.toString(16));
+      } else {
+        if ($.inArray(cell.id / 1, array) == -1) {
+          val *= density;
+          $(cell).css("background-color", "#00"+val.toString(16));
+        } else {
+          $(cell).css("background-color", "red");
+        }
+        
       }
     },
 
@@ -179,7 +186,6 @@ if (Meteor.isClient) {
     },
 
     'mouseup td':function (event){
-
       var begin = Session.get("from");
       var into = Session.set("to",event.target.id);
       var end = Session.get("to");
@@ -208,11 +214,15 @@ if (Meteor.isClient) {
       var start = from/1;
       var current;
 
+      var defaultTable = Session.get("defaultTable");
+      var val = 0x002B00;
+      var density;
+
       for (var j = 0; j <= Math.abs(to_y-from_y); j++) {
 
         if (from_y > to_y) {
           current = start - j;
-        }else {
+        } else {
           current = start + j;
         }
 
@@ -221,15 +231,20 @@ if (Meteor.isClient) {
           var pos = $.inArray(current,cells);
           if (ADD){
             //not inside array
-            if (pos == -1){
+            if (pos == -1) {
               cells.push(current);
               $("#"+current).css("background-color","red");
             }
-          } else{
+          } else {
             //inside array
-            if (pos != -1){
+            if (pos != -1) {
               cells.splice(pos,1);
-              $("#"+current).css("background-color","white");
+              val *= defaultTable[current];
+              if (val == 0) {
+                $("#"+current).css("background-color","");
+              } else {
+                $("#"+current).css("background-color","#00"+val.toString(16));
+              }
             }
           }
           current += SLOTS_PER_DAY;
