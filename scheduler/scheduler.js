@@ -240,11 +240,12 @@ if (Meteor.isClient) {
             //inside array
             if (pos != -1) {
               cells.splice(pos,1);
-              val *= defaultTable[current];
-              if (val == 0) {
+              density = defaultTable[current];
+              var cellColor = val * density;
+              if (cellColor == 0) {
                 $("#"+current).css("background-color","");
               } else {
-                $("#"+current).css("background-color","#00"+val.toString(16));
+                $("#"+current).css("background-color","#00"+cellColor.toString(16));
               }
             }
           }
