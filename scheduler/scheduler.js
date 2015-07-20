@@ -3,7 +3,7 @@
 // So making the mongo collection here means the user
 // has a local copy of it
 
-People = new Mongo.Collection("people");
+//People = new Mongo.Collection("people");
 console.log("Hello world");
 SLOTS_PER_DAY = 48
 DAYS = 7
@@ -15,23 +15,16 @@ if (Meteor.isClient) {
   console.log("Hello client");
 
   Template.body.helpers({
-    timeTables: function() {
-      var instance = TimeTables.findOne({userName: "example"});
-      return instance.userId;
-    },
 
-    timeTables_getSlots: function(userName) {
-      var instance = TimeTables.findOne({userName: userName});
-      console.log(instance.freeSlots);
-    }
   });
 
   Template.results.helpers({
     // Helpers are defined in JSON format
     // (name as key, function as value)
-    people: function () {
-      return People.find();
+    TimeTables: function () {
+      return TimeTables.find();
     }
+    
   });
 
   Template.select.helpers({
@@ -93,10 +86,21 @@ if (Meteor.isClient) {
       //console.log($(event.target).attr('id'));
     },
 
-    'submit .done': function (event) {
-      var n = event.target.name.value;
-      var array = Session.get("timeSelected");
-      Meteor.call("submit", n, array, event);
+    'submit form': function (event) {
+      event.preventDefault();
+      var name = event.target.name.value;
+      console.log(name);
+      var array = Session.get("SelectedCells");
+      console.log(array);
+      // Meteor.call("submitTimeTable", name, array);
+
+      TimeTables.insert({
+        userName: name,
+        freeSlots: array,
+        createdAt: new Date()
+      });
+      console.log("insert successed");
+      event.target.name.value = "";
     },
 
     'mouseenter td' : function (event) {
@@ -131,9 +135,9 @@ if (Meteor.isClient) {
       if (Session.get("SelectedCells") != null){
         var array = Session.get("SelectedCells");
         var pos = $.inArray(cell.id/1,array);
-        for (var i in array){
-          console.log(array[i]);
-        }
+        // for (var i in array){
+        //   console.log(array[i]);
+        // }
         if (pos != -1){
           ADD = false;
         } else{
@@ -215,12 +219,13 @@ if (Meteor.isServer) {
   // and {} or empty parameter matches all documents).
 
   // If People is empty
-  if (TimeTables.find().count() == 0) {
-    var array = [0, 23, 74];
-    TimeTables.insert({userName: "example", userId: 1324, freeSlots: array, createdAt: new Date()});
-  }
-
   Meteor.methods({
+    insertExample : function() {
+      var array = [3,4,5,6,7];
+      console.log(array.length);
+      TimeTables.insert({userName: "example", userId: 1324, freeSlots: array, createdAt: new Date()});  
+    },
+
     addPerson : function(name) {
       // A zeroed array 48 cells long
       var times = [];
@@ -233,23 +238,16 @@ if (Meteor.isServer) {
       People.insert({name: name, free: free});
     },
 
-    submit:function(name, array, event){
-      People.update({name:name},{$set:{free:array}});
+    submitTimeTable : function(name, array){
+      // People.update({name:name},{$set:{free:array}});
       
-      event.preventDefault();
-      
-      var userName = name;
-      var userId = Meteor.userId();
-      var freeSlots = array;
-
       TimeTables.insert({
-        userName: userName,
-        userId: userId,
-        freeSlots: freeSlots,
+        userName: name,
+        freeSlots: array,
         createdAt: new Data()
       });
 
-      event.target.text.value = "";
+      event.target.name.value = "";
     }
   });
 }
