@@ -13,7 +13,7 @@ TimeTables = new Mongo.Collection("timeTables");
 
 if (Meteor.isClient) {
   console.log("Hello client");
-
+  Session.set("SelectedCells", []);
   Template.body.helpers({
 
   });
@@ -93,7 +93,11 @@ if (Meteor.isClient) {
       var array = Session.get("SelectedCells");
       console.log(array);
       // Meteor.call("submitTimeTable", name, array);
-
+      for (var i in array){
+        $("#"+array[i]).css("background-color","white");
+      }
+      var newArray = [];
+      Session.set("SelectedCells",newArray);
       TimeTables.insert({
         userName: name,
         freeSlots: array,
